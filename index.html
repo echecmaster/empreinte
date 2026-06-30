@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Empreinte — Étude de forme</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #0a0a0a;
+    --ivory: #f4efe4;
+    --ivory-dim: #c9c3b4;
+    --brass: #c9a876;
+    --line: rgba(244,239,228,0.12);
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--bg);
+    color:var(--ivory);
+    font-family:'Inter',sans-serif;
+    font-weight:300;
+    overflow-x:hidden;
+  }
+  ::selection{background:var(--brass);color:#0a0a0a;}
+
+  /* reduced motion */
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:0.01ms !important; animation-iteration-count:1 !important; transition-duration:0.01ms !important;}
+  }
+
+  a{color:inherit;}
+
+  /* Nav */
+  nav{
+    position:fixed; top:0; left:0; right:0; z-index:50;
+    display:flex; justify-content:space-between; align-items:center;
+    padding:28px 5vw;
+    mix-blend-mode:difference;
+  }
+  .nav-mark{
+    font-family:'Fraunces',serif; font-size:18px; letter-spacing:0.04em;
+  }
+  .nav-links{display:flex; gap:36px; font-size:12px; letter-spacing:0.12em; text-transform:uppercase;}
+  .nav-links a{text-decoration:none; opacity:0.7; transition:opacity .3s;}
+  .nav-links a:hover{opacity:1;}
+
+  /* Scroll progress index */
+  .scroll-index{
+    position:fixed; right:5vw; top:50%; transform:translateY(-50%);
+    z-index:40; display:flex; flex-direction:column; gap:18px;
+    font-size:11px; letter-spacing:0.1em;
+  }
+  .scroll-index .dot{
+    width:6px; height:6px; border-radius:50%; border:1px solid var(--ivory-dim);
+    transition:all .4s ease; cursor:pointer; opacity:0.5;
+  }
+  .scroll-index .dot.active{background:var(--brass); border-color:var(--brass); opacity:1; transform:scale(1.3);}
+
+  section{
+    position:relative;
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+  }
+
+  /* HERO */
+  .hero{
+    flex-direction:column; justify-content:center; align-items:flex-start;
+    padding:0 5vw;
+  }
+  .hero-eyebrow{
+    font-size:12px; letter-spacing:0.25em; text-transform:uppercase; color:var(--brass);
+    opacity:0; animation:fadeUp 1s 0.3s forwards;
+  }
+  .hero h1{
+    font-family:'Fraunces',serif; font-weight:300;
+    font-size:clamp(48px, 9vw, 130px);
+    line-height:0.95;
+    letter-spacing:-0.01em;
+    margin-top:18px;
+    opacity:0; animation:fadeUp 1.1s 0.5s forwards;
+  }
+  .hero h1 em{font-style:italic; font-weight:400; color:var(--brass);}
+  .hero p{
+    max-width:420px; margin-top:26px; font-size:16px; line-height:1.7; color:var(--ivory-dim);
+    opacity:0; animation:fadeUp 1.1s 0.7s forwards;
+  }
+  .hero-scroll{
+    position:absolute; bottom:48px; left:5vw;
+    font-size:11px; letter-spacing:0.15em; text-transform:uppercase; color:var(--ivory-dim);
+    display:flex; align-items:center; gap:14px;
+    opacity:0; animation:fadeUp 1s 1.2s forwards;
+  }
+  .hero-scroll .line{width:36px; height:1px; background:var(--ivory-dim); position:relative; overflow:hidden;}
+  .hero-scroll .line::after{
+    content:''; position:absolute; left:-100%; top:0; width:100%; height:100%; background:var(--brass);
+    animation:slideLine 2.4s ease-in-out infinite;
+  }
+  @keyframes slideLine{
+    0%{left:-100%;} 50%{left:0;} 100%{left:100%;}
+  }
+  @keyframes fadeUp{
+    from{opacity:0; transform:translateY(24px);}
+    to{opacity:1; transform:translateY(0);}
+  }
+
+  #hero-canvas{
+    position:absolute; inset:0; z-index:0;
+  }
+  .hero-content{position:relative; z-index:2; pointer-events:none;}
+  .hero-content p{pointer-events:auto;}
+
+  /* MODEL SECTIONS */
+  .model-section{
+    padding:0 5vw;
+  }
+  .model-grid{
+    display:grid; grid-template-columns:1fr 1fr; gap:60px; width:100%; align-items:center;
+  }
+  .model-canvas-wrap{
+    position:relative; aspect-ratio:1/1; width:100%;
+  }
+  .model-canvas-wrap canvas{display:block; width:100% !important; height:100% !important;}
+  .model-text .index{
+    font-family:'Fraunces',serif; font-style:italic; color:var(--brass); font-size:14px; letter-spacing:0.1em;
+  }
+  .model-text h2{
+    font-family:'Fraunces',serif; font-weight:300; font-size:clamp(36px,5vw,64px);
+    margin-top:14px; line-height:1.05;
+  }
+  .model-text p{
+    margin-top:22px; color:var(--ivory-dim); line-height:1.8; max-width:420px; font-size:15.5px;
+  }
+  .model-text .meta{
+    margin-top:36px; display:flex; gap:40px; padding-top:24px; border-top:1px solid var(--line);
+  }
+  .model-text .meta div{font-size:11px; letter-spacing:0.1em; text-transform:uppercase; color:var(--ivory-dim);}
+  .model-text .meta strong{display:block; font-family:'Fraunces',serif; font-size:20px; color:var(--ivory); font-weight:400; margin-top:6px; letter-spacing:0;}
+
+  .reveal{opacity:0; transform:translateY(40px); transition:opacity 1.1s ease, transform 1.1s ease;}
+  .reveal.in{opacity:1; transform:translateY(0);}
+
+  @media (max-width: 860px){
+    .model-grid{grid-template-columns:1fr; gap:30px;}
+    .model-canvas-wrap{aspect-ratio:1/0.9;}
+    .scroll-index{display:none;}
+    nav{padding:22px 6vw;}
+  }
+
+  /* footer */
+  footer{
+    padding:120px 5vw 60px;
+    border-top:1px solid var(--line);
+    display:flex; flex-direction:column; gap:50px;
+  }
+  footer .foot-top{
+    display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:30px;
+  }
+  footer h3{
+    font-family:'Fraunces',serif; font-weight:300; font-size:clamp(32px,5vw,56px); max-width:560px; line-height:1.1;
+  }
+  footer h3 em{color:var(--brass); font-style:italic;}
+  .foot-cta{
+    font-size:12px; letter-spacing:0.15em; text-transform:uppercase;
+    border:1px solid var(--ivory-dim); padding:16px 30px; white-space:nowrap;
+    transition:all .35s ease; cursor:pointer; background:none; color:var(--ivory);
+  }
+  .foot-cta:hover{background:var(--brass); border-color:var(--brass); color:#0a0a0a;}
+  .foot-bottom{
+    display:flex; justify-content:space-between; font-size:11px; letter-spacing:0.08em;
+    color:var(--ivory-dim); text-transform:uppercase; flex-wrap:wrap; gap:14px;
+  }
+
+  .loader{
+    position:fixed; inset:0; background:#0a0a0a; z-index:100;
+    display:flex; align-items:center; justify-content:center; flex-direction:column; gap:18px;
+    transition:opacity .8s ease, visibility .8s ease;
+  }
+  .loader.hidden{opacity:0; visibility:hidden; pointer-events:none;}
+  .loader-mark{font-family:'Fraunces',serif; font-style:italic; font-size:22px; letter-spacing:0.05em; color:var(--ivory);}
+  .loader-bar{width:160px; height:1px; background:var(--line); position:relative; overflow:hidden;}
+  .loader-bar::after{
+    content:''; position:absolute; left:0; top:0; height:100%; width:40%; background:var(--brass);
+    animation:loaderSlide 1.1s ease-in-out infinite;
+  }
+  @keyframes loaderSlide{
+    0%{left:-40%;} 100%{left:100%;}
+  }
+</style>
+</head>
+<body>
+
+<div class="loader" id="loader">
+  <div class="loader-mark">Empreinte</div>
+  <div class="loader-bar"></div>
+</div>
+
+<nav>
+  <div class="nav-mark">Empreinte</div>
+  <div class="nav-links">
+    <a href="#main">La main</a>
+    <a href="#bonhomme">La figure</a>
+    <a href="#contact">Contact</a>
+  </div>
+</nav>
+
+<div class="scroll-index" id="scrollIndex">
+  <div class="dot active" data-target="hero"></div>
+  <div class="dot" data-target="main"></div>
+  <div class="dot" data-target="bonhomme"></div>
+  <div class="dot" data-target="contact"></div>
+</div>
+
+<section class="hero" id="hero">
+  <canvas id="hero-canvas"></canvas>
+  <div class="hero-content">
+    <div class="hero-eyebrow">Étude de forme — Volume 01</div>
+    <h1>Deux <em>formes</em>,<br>une matière.</h1>
+    <p>Une main et une figure, modelées en trois dimensions et présentées dans leur plus simple lumière. Rien d'autre.</p>
+  </div>
+  <div class="hero-scroll"><span class="line"></span> Faites défiler</div>
+</section>
+
+<section class="model-section" id="main">
+  <div class="model-grid">
+    <div class="model-canvas-wrap reveal" id="wrap-main">
+      <canvas id="canvas-main"></canvas>
+    </div>
+    <div class="model-text reveal">
+      <div class="index">01 — La main</div>
+      <h2>Le geste<br>suspendu.</h2>
+      <p>Chaque articulation a été pensée comme une charnière de lumière. La main tourne lentement sur elle-même, immobile et vivante à la fois — une pause au milieu du mouvement.</p>
+      <div class="meta">
+        <div>Format<strong>GLB · 3D</strong></div>
+        <div>Rendu<strong>Temps réel</strong></div>
+        <div>Rotation<strong>Automatique</strong></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="model-section" id="bonhomme">
+  <div class="model-grid">
+    <div class="model-text reveal">
+      <div class="index">02 — La figure</div>
+      <h2>Le corps<br>réduit à l'essentiel.</h2>
+      <p>Une silhouette simple, presque archétypale. Elle dérive doucement dans l'espace, portée par une lumière rasante qui dessine chaque arête sans jamais la durcir.</p>
+      <div class="meta">
+        <div>Format<strong>GLB · 3D</strong></div>
+        <div>Rendu<strong>Temps réel</strong></div>
+        <div>Mouvement<strong>Flottement</strong></div>
+      </div>
+    </div>
+    <div class="model-canvas-wrap reveal" id="wrap-bonhomme">
+      <canvas id="canvas-bonhomme"></canvas>
+    </div>
+  </div>
+</section>
+
+<footer id="contact">
+  <div class="foot-top">
+    <h3>Une forme à <em>modeler</em> pour votre projet&nbsp;?</h3>
+    <button class="foot-cta" onclick="location.href='mailto:atelier@empreinte.studio'">Écrire à l'atelier</button>
+  </div>
+  <div class="foot-bottom">
+    <span>Empreinte — Atelier 3D</span>
+    <span>© 2026 — Tous droits réservés</span>
+  </div>
+</footer>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+<script type="module">
+import * as THREE from "three";
+import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+
+const loaderEl = document.getElementById('loader');
+let assetsToLoad = 2;
+function assetLoaded(){
+  assetsToLoad--;
+  if(assetsToLoad <= 0){
+    setTimeout(()=> loaderEl.classList.add('hidden'), 300);
+  }
+}
+
+function makeRimLight(scene){
+  const key = new THREE.DirectionalLight(0xf4efe4, 2.2);
+  key.position.set(3, 4, 5);
+  scene.add(key);
+
+  const rim = new THREE.DirectionalLight(0xc9a876, 4.5);
+  rim.position.set(-4, 2, -4);
+  scene.add(rim);
+
+  const fill = new THREE.DirectionalLight(0x6b7a8f, 0.6);
+  fill.position.set(-2, -1, 3);
+  scene.add(fill);
+
+  const ambient = new THREE.AmbientLight(0x202020, 0.8);
+  scene.add(ambient);
+}
+
+function frameObject(object, camera){
+  const box = new THREE.Box3().setFromObject(object);
+  const size = box.getSize(new THREE.Vector3());
+  const center = box.getCenter(new THREE.Vector3());
+  object.position.sub(center);
+  const maxDim = Math.max(size.x, size.y, size.z);
+  const fitDist = (maxDim / 2) / Math.tan((camera.fov * Math.PI/180) / 2) * 1.55;
+  camera.position.set(0, maxDim*0.08, fitDist);
+  camera.lookAt(0,0,0);
+}
+
+function setupViewer(canvasId, url, opts={}){
+  const canvas = document.getElementById(canvasId);
+  const wrap = canvas.parentElement;
+
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(35, 1, 0.1, 100);
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias:true, alpha:true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.1;
+
+  makeRimLight(scene);
+
+  let model = null;
+  let mixer = null;
+  const clock = new THREE.Clock();
+
+  const loader = new GLTFLoader();
+  loader.load(url, (gltf) => {
+    model = gltf.scene;
+    model.traverse(n=>{
+      if(n.isMesh){
+        n.castShadow = false;
+        n.receiveShadow = false;
+        if(n.material){
+          n.material.envMapIntensity = 1.2;
+        }
+      }
+    });
+    scene.add(model);
+    frameObject(model, camera);
+
+    if(gltf.animations && gltf.animations.length){
+      mixer = new THREE.AnimationMixer(model);
+      gltf.animations.forEach(clip => mixer.clipAction(clip).play());
+    }
+    assetLoaded();
+  }, undefined, (err)=>{ console.error('Erreur de chargement', url, err); assetLoaded(); });
+
+  function resize(){
+    const w = wrap.clientWidth, h = wrap.clientHeight;
+    renderer.setSize(w, h, false);
+    camera.aspect = w/h;
+    camera.updateProjectionMatrix();
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  let t0 = performance.now();
+  let visible = true;
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(e=> visible = e.isIntersecting);
+  }, {threshold:0.05});
+  io.observe(wrap);
+
+  let mouseX = 0, mouseY = 0;
+  wrap.addEventListener('mousemove', (e)=>{
+    const r = wrap.getBoundingClientRect();
+    mouseX = ((e.clientX - r.left) / r.width - 0.5) * 2;
+    mouseY = ((e.clientY - r.top) / r.height - 0.5) * 2;
+  });
+  wrap.addEventListener('mouseleave', ()=>{ mouseX=0; mouseY=0; });
+
+  function animate(){
+    requestAnimationFrame(animate);
+    if(!visible) return;
+    const dt = clock.getDelta();
+    const t = performance.now() * 0.001;
+
+    if(mixer) mixer.update(dt);
+
+    if(model){
+      const spin = opts.spinSpeed ?? 0.25;
+      model.rotation.y += spin * dt;
+      model.rotation.y += mouseX * 0.15 * dt;
+      model.position.y = Math.sin(t * (opts.floatSpeed ?? 0.8)) * (opts.floatAmp ?? 0.05);
+      model.rotation.x = Math.sin(t * 0.4) * 0.03 + mouseY * 0.08;
+    }
+    renderer.render(scene, camera);
+  }
+  animate();
+}
+
+// Hero ambient scene — both shapes drifting softly in the background
+function setupHero(){
+  const canvas = document.getElementById('hero-canvas');
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(38, window.innerWidth/window.innerHeight, 0.1, 100);
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias:true, alpha:true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+
+  makeRimLight(scene);
+  scene.fog = new THREE.Fog(0x0a0a0a, 4, 14);
+
+  const group1 = new THREE.Group();
+  const group2 = new THREE.Group();
+  scene.add(group1, group2);
+
+  const loader = new GLTFLoader();
+  loader.load('main.glb', (gltf)=>{
+    const m = gltf.scene;
+    group1.add(m);
+    const box = new THREE.Box3().setFromObject(m);
+    const size = box.getSize(new THREE.Vector3());
+    const center = box.getCenter(new THREE.Vector3());
+    m.position.sub(center);
+    const scale = 1.6 / Math.max(size.x,size.y,size.z);
+    m.scale.setScalar(scale);
+    group1.position.set(2.1, -0.4, -1.5);
+    assetLoaded();
+  }, undefined, ()=>assetLoaded());
+
+  loader.load('bonhomme.glb', (gltf)=>{
+    const m = gltf.scene;
+    group2.add(m);
+    const box = new THREE.Box3().setFromObject(m);
+    const size = box.getSize(new THREE.Vector3());
+    const center = box.getCenter(new THREE.Vector3());
+    m.position.sub(center);
+    const scale = 1.8 / Math.max(size.x,size.y,size.z);
+    m.scale.setScalar(scale);
+    group2.position.set(-2.2, -0.2, -3);
+    assetLoaded();
+  }, undefined, ()=>assetLoaded());
+
+  camera.position.set(0, 0.2, 5);
+
+  function resize(){
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    camera.aspect = window.innerWidth/window.innerHeight;
+    camera.updateProjectionMatrix();
+  }
+  window.addEventListener('resize', resize);
+
+  let mouseX=0, mouseY=0;
+  window.addEventListener('mousemove', (e)=>{
+    mouseX = (e.clientX/window.innerWidth - 0.5);
+    mouseY = (e.clientY/window.innerHeight - 0.5);
+  });
+
+  function animate(){
+    requestAnimationFrame(animate);
+    const t = performance.now()*0.001;
+    group1.rotation.y = t * 0.18;
+    group1.position.y = -0.4 + Math.sin(t*0.6)*0.12;
+    group2.rotation.y = -t * 0.13 + 0.6;
+    group2.position.y = -0.2 + Math.sin(t*0.5 + 2)*0.1;
+
+    camera.position.x += (mouseX*0.6 - camera.position.x)*0.02;
+    camera.position.y += (-mouseY*0.3 + 0.2 - camera.position.y)*0.02;
+    camera.lookAt(0,0,0);
+
+    renderer.render(scene, camera);
+  }
+  animate();
+}
+
+setupHero();
+setupViewer('canvas-main', 'main.glb', { spinSpeed: 0.3, floatAmp:0.04, floatSpeed:0.9 });
+setupViewer('canvas-bonhomme', 'bonhomme.glb', { spinSpeed: 0.22, floatAmp:0.06, floatSpeed:0.7 });
+
+// scroll reveal
+const reveals = document.querySelectorAll('.reveal');
+const ro = new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('in'); });
+}, {threshold:0.2});
+reveals.forEach(r=>ro.observe(r));
+
+// scroll index dots
+const dots = document.querySelectorAll('.scroll-index .dot');
+const sections = ['hero','main','bonhomme','contact'].map(id=>document.getElementById(id));
+dots.forEach(d=>d.addEventListener('click', ()=>{
+  document.getElementById(d.dataset.target).scrollIntoView({behavior:'smooth'});
+}));
+const sectionObserver = new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      dots.forEach(d=>d.classList.toggle('active', d.dataset.target === e.target.id));
+    }
+  });
+}, {threshold:0.5});
+sections.forEach(s=> s && sectionObserver.observe(s));
+
+// safety: hide loader after timeout regardless
+setTimeout(()=> loaderEl.classList.add('hidden'), 6000);
+</script>
+</body>
+</html>
